@@ -1,0 +1,35 @@
+body, h1, p {
+    font-family: 'Roboto', sans-serif;
+}
+
+.myHeader {
+    width: 100%;
+    height: 80px;
+    top: 0;
+    padding: 15px;
+    color: white;
+    background-color: #283593;
+    box-shadow: 0px 2px 4px rgba(44, 62, 80, 0.15);
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.myHeader h1 {
+    text-align: center;
+}
+
+input {
+    text-align: center;
+}
+
+.padTop {
+    padding-top: 30px;
+}
+
+.padBottom {
+    padding-bottom: 10px;
+}
+
+.row>div {
+    border: 1px solid grey;
+  }
