@@ -25,190 +25,62 @@
                 <h1>Bowling App</h2>
             </div>
         </div>
-        
-        <div class="testBtn">
-            <button class="btn btn-primary shadow-sm">Click Me</button>
-        </div>
 
-        <div>
-            <input id="myInput">
-        </div>
-
-        <div class="testNum">
-            <h2>0</h2>
-        </div>
+        <br>
         
         <div class="card shadow">
-          <div class="card-header">
+
+          <div class="card-header bg-info text-white">
             <h6 class="font-weight-bold">Player 1</h6>
           </div>
+
           <div class="card-body">
             <div class="row text-center">
 
               <!-- Box -->
-              <div class="col-sm-1">
-                <p class="card-text font-weight-bold">schema 1</p>
-                <div class="row">
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
+              <div class="col-2 col-sm-1 border">
+                <div class="row schema justify-content-center">
+                  <p class="font-weight-bold">1</p>
+                </div>
+                <div class="row topBorder">
+                  <div class="col-6 col-sm-6">
+                    <p class="font-weight-bold">2</p>
                   </div>
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
+                  <div class="col-6 col-sm-6 specialBorder">
+                    <p class="font-weight-bold">3</p>
                   </div>
                 </div>
-                <p id="score1" class="card-text font-weight-bold padTop">-</p>
+                <p id="score1" class="font-weight-bold padTop score">30</p>
               </div>
 
               <!-- Box -->
-              <div class="col-sm-1">
-                <p class="card-text font-weight-bold">schema 1</p>
-                <div class="row">
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
+              <div class="col-2 col-sm-1 border">
+                <div class="row schema justify-content-center">
+                  <p class="font-weight-bold">2</p>
+                </div>
+                <div class="row topBorder">
+                  <div class="col-6 col-sm-6">
+                    <p class="font-weight-bold">-</p>
                   </div>
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
+                  <div class="col-6 col-sm-6 specialBorder">
+                    <p class="font-weight-bold">-</p>
                   </div>
                 </div>
-                <p class="card-text font-weight-bold">-</p>
+                <p id="score2" class="font-weight-bold padTop score">-</p>
+              </div>
+            </div>
+            
+            <!-- Input -->
+            <div class="row">
+
+              <div class="col-6 col-sm-2">
+                <input class="form-control marginTop" id="knockOutPins" placeholder="Pins Knocked Out" maxlength="2">
               </div>
 
-              <!-- Box -->
-              <div class="col-sm-1">
-                <p class="card-text font-weight-bold">schema 1</p>
-                <div class="row">
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                </div>
-                <p class="card-text font-weight-bold">-</p>
+              <div class="col-3 col-sm-2">
+                <button type="submit" id="button1" class="btn btn-primary shadow-sm marginTop">Submit</button>
               </div>
-
-              <!-- Box -->
-              <div class="col-sm-1">
-                <p class="card-text font-weight-bold">schema 1</p>
-                <div class="row">
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                </div>
-                <p class="card-text font-weight-bold">-</p>
-              </div>
-
-              <!-- Box -->
-              <div class="col-sm-1">
-                <p class="card-text font-weight-bold">schema 1</p>
-                <div class="row">
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                </div>
-                <p class="card-text font-weight-bold">-</p>
-              </div>
-
-              <!-- Box -->
-              <div class="col-sm-1">
-                <p class="card-text font-weight-bold">schema 1</p>
-                <div class="row">
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                </div>
-                <p class="card-text font-weight-bold">-</p>
-              </div>
-
-              <!-- Box -->
-              <div class="col-sm-1">
-                <p class="card-text font-weight-bold">schema 1</p>
-                <div class="row">
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                </div>
-                <p class="card-text font-weight-bold">-</p>
-              </div>
-
-              <!-- Box -->
-              <div class="col-sm-1">
-                <p class="card-text font-weight-bold">schema 1</p>
-                <div class="row">
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                </div>
-                <p class="card-text font-weight-bold">-</p>
-              </div>
-
-              <!-- Box -->
-              <div class="col-sm-1">
-                <p class="card-text font-weight-bold">schema 1</p>
-                <div class="row">
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                </div>
-                <p class="card-text font-weight-bold">-</p>
-              </div>
-
-              <!-- Box -->
-              <div class="col-sm-1">
-                <p class="card-text font-weight-bold">schema 1</p>
-                <div class="row">
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                </div>
-                <p class="card-text font-weight-bold">-</p>
-              </div>
-
-              <!-- Box -->
-              <div class="col-sm-1">
-                <p class="card-text font-weight-bold">schema 1</p>
-                <div class="row">
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                  <div class="col-sm-6">
-                    <p class="card-text font-weight-bold">-</p>
-                  </div>
-                </div>
-                <p class="card-text font-weight-bold">-</p>
-              </div>
-
-              <!-- Input -->
-              <div class="col-sm-1 padBottom">
-                <form>
-                  <div class="form-group">
-                    <label for="KnockOutPins" class="font-weight-bold">Pins</label>
-                    <input class="form-control" id="KnockOutPins" placeholder="Number" maxlength="2">
-                  </div>
-                  <button class="btn btn-primary shadow-sm">Submit</button>
-                </form>
-              </div>
+              
             </div>
           </div>
         </div>

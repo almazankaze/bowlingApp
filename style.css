@@ -2,6 +2,10 @@ body, h1, p {
     font-family: 'Roboto', sans-serif;
 }
 
+p {
+    padding-top: 10px;
+}
+
 .myHeader {
     width: 100%;
     height: 80px;
@@ -23,13 +27,30 @@ input {
 }
 
 .padTop {
-    padding-top: 30px;
+    padding-top: 20px;
 }
 
-.padBottom {
-    padding-bottom: 10px;
+.marginTop {
+    margin-top: 15px;
 }
 
-.row>div {
-    border: 1px solid grey;
-  }
+.score {
+    font-size: 20px;
+}
+
+.schema {
+    background-color: coral;
+}
+
+.border {
+    border: 1px solid black;
+}
+
+.topBorder {
+    border-top: 1px solid black;
+}
+
+.specialBorder {
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+}

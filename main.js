@@ -1,6 +1,8 @@
 const firstBtn = document.querySelector('.testBtn button');
 let firstNum = document.querySelector('.testNum h2');
-let myInput = document.getElementById("myInput");
+let myInput = document.getElementById("knockOutPins");
+
+const button1 = document.getElementById("button1");
 
 class Game {
     constructor() {
@@ -22,11 +24,14 @@ class Game {
 let game = new Game();
 
 firstBtn.addEventListener('click', getPinInput);
+button1.addEventListener('click', getPinInput);
 
 function getPinInput() {
     
     let numPins = parseInt(myInput.value);
     let score = game.calcPinScore(numPins);
 
-    firstNum.innerHTML = score;
+    let otherScore = document.getElementById("score" + 1);
+
+    otherScore.innerHTML = score;
 }
