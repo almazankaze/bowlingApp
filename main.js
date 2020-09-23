@@ -1,7 +1,11 @@
+// color array
+let backgroundColors = ['#1976d2','#d50000','#388e3c','#8e24aa'];
+
 class Game {
 
     #frame;
     #round;
+    #frameScore;
     #score;
     #symbolBoard
     #scoreBoard
@@ -9,6 +13,7 @@ class Game {
     constructor() {
         this.#frame = 1;
         this.#round = 1;
+        this.#frameScore = 0;
         this.#score = 0;
         this.#symbolBoard = new Array();
         this.#scoreBoard = new Array();
@@ -24,6 +29,18 @@ class Game {
 
     get score() {
         return this.#score;
+    }
+
+    set frameScore(newScore) {
+        this.#frameScore = newScore;
+    }
+
+    get frameScore() {
+        return this.#frameScore;
+    }
+
+    set round(newRound) {
+        this.#round = newRound;
     }
 
     get round() {
@@ -53,7 +70,8 @@ function createPlayer() {
 
     // header for card
     let cardHeader = document.createElement('div');
-    cardHeader.classList.add('card-header','bg-info','text-white');
+    cardHeader.classList.add('card-header','text-white');
+    cardHeader.style.backgroundColor = backgroundColors[numPlayers-1];
     let headerH6 = document.createElement('h6');
     headerH6.classList.add('font-weight-bold');
     let headerText = document.createTextNode('Player ' + numPlayers);
@@ -159,20 +177,53 @@ function createPlayer() {
     list.appendChild(space);
 }
 
-function postRoundScore(playerId, pins) {
+// update frame
+function postRoundScore(playerId, pinsKnockedOut) {
 
-    if(pins === 10) {
+    // if player got a strike
+    if(players[playerId-1].round === 1 && pinsKnockedOut === 10) {
         let box = document.getElementById('p' + playerId + 's2r' + players[playerId-1].frame);
         box.innerHTML = 'x';
+        players[playerId-1].updateGameState();
+    }
+    // if player got a spare
+    else if(players[playerId-1].round === 2 && (pinsKnockedOut + players[playerId-1].frameScore) === 10) {
+        let box = document.getElementById('p' + playerId + 's2r' + players[playerId-1].frame);
+        box.innerHTML = '/'
+        players[playerId-1].round = 1;
+        players[playerId-1].frameScore = 0;
+        players[playerId-1].updateGameState();
+    }
+    else {
+        let box = document.getElementById('p' + playerId + 's' + players[playerId-1].round + 'r' + players[playerId-1].frame);
+        box.innerHTML = pinsKnockedOut;
+
+        if(players[playerId-1].round === 1) {
+            players[playerId-1].round = 2;
+            players[playerId-1].frameScore = pinsKnockedOut;
+        }
+        else {
+            players[playerId-1].round = 1;
+            players[playerId-1].frameScore = 0;
+            players[playerId-1].updateGameState();
+        }
     }
 }
 
 function getInput(btnId) {
 
-    let input = parseInt(document.getElementById('pInput' + btnId).value);
+    let input = document.getElementById('pInput' + btnId);
+    let inputVal = parseInt(input.value);
+    let thisFrameScore = inputVal + players[btnId-1].frameScore;
+
+    input.value = '';
+
+    // check input makes sense
+    if(thisFrameScore > 10) {
+        return;
+    }
     
-    postRoundScore(btnId, input);
-    players[btnId-1].updateGameState();
+    postRoundScore(btnId, inputVal);
 }
 
 let numPlayers = 1;
