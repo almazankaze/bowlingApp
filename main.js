@@ -69,8 +69,13 @@ function createPlayer() {
     playerCard.id = 'player' + numPlayers;
 
     // header for card
-    let cardHeader = document.createElement('div');
-    cardHeader.classList.add('card-header','text-white');
+    let cardHeader = document.createElement('a');
+    cardHeader.href = '#collapseCard' + numPlayers;
+    cardHeader.classList.add('d-block','card-header','text-white','py-3');
+    cardHeader.setAttribute('data-toggle','collapse');
+    cardHeader.setAttribute('role','button');
+    cardHeader.setAttribute('aria-expanded','true');
+    cardHeader.setAttribute('aria-controls','collapseCard' + numPlayers);
     cardHeader.style.backgroundColor = backgroundColors[numPlayers-1];
     let headerH6 = document.createElement('h6');
     headerH6.classList.add('font-weight-bold');
@@ -79,6 +84,9 @@ function createPlayer() {
     cardHeader.appendChild(headerH6);
 
     // body for card
+    let collapseDiv = document.createElement('div');
+    collapseDiv.classList.add('collapse','show');
+    collapseDiv.id = 'collapseCard' + numPlayers;
     let cardBody = document.createElement('div');
     cardBody.classList.add('card-body');
 
@@ -166,13 +174,14 @@ function createPlayer() {
     inputRow.appendChild(btnDiv);
     
     cardBody.appendChild(inputRow);
+    collapseDiv.appendChild(cardBody);
 
     // create a break
     let space = document.createElement('br');
 
     // add player card to DOM
     playerCard.appendChild(cardHeader);
-    playerCard.appendChild(cardBody);
+    playerCard.appendChild(collapseDiv);
     list.appendChild(playerCard);
     list.appendChild(space);
 }
