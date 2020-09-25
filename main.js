@@ -1,59 +1,13 @@
 // color array
 let backgroundColors = ['#1976d2','#d50000','#388e3c','#8e24aa'];
 
-class Game {
-
-    #frame;
-    #round;
-    #frameScore;
-    #score;
-    #symbolBoard
-    #scoreBoard
-
-    constructor() {
-        this.#frame = 1;
-        this.#round = 1;
-        this.#frameScore = 0;
-        this.#score = 0;
-        this.#symbolBoard = new Array();
-        this.#scoreBoard = new Array();
-    }
-
-    updateGameState() {
-        this.#frame++;
-    }
-
-    set score(numPins) {
-        this.updateGameState();
-    }
-
-    get score() {
-        return this.#score;
-    }
-
-    set frameScore(newScore) {
-        this.#frameScore = newScore;
-    }
-
-    get frameScore() {
-        return this.#frameScore;
-    }
-
-    set round(newRound) {
-        this.#round = newRound;
-    }
-
-    get round() {
-        return this.#round;
-    }
-
-    get frame() {
-        return this.#frame;
-    }
-}
-
 function setUp() {
     createPlayer();
+}
+
+function strcmp(a, b)
+{   
+    return (a<b?-1:(a>b?1:0));  
 }
 
 // creates the scoreboard for a player
@@ -95,7 +49,7 @@ function createPlayer() {
     scoreBoard.classList.add('row','text-center');
 
     // create individual schema score column
-    for(i = 1; i < 11; i++) {
+    for(i = 1; i < 12; i++) {
 
         let col = document.createElement('div');
         col.classList.add('col-2','col-sm-1','border');
@@ -104,7 +58,15 @@ function createPlayer() {
         schemaRoundBox.classList.add('row','schema','justify-content-center');
         let schemaRoundP = document.createElement('p');
         schemaRoundBox.classList.add('font-weight-bold');
-        let schemaRoundText = document.createTextNode(i);
+        let schemaRoundText;
+
+        if(i < 11) {
+            schemaRoundText = document.createTextNode(i);
+        }
+        else {
+            schemaRoundText = document.createTextNode('extra');
+        }
+
         schemaRoundP.appendChild(schemaRoundText);
         schemaRoundBox.appendChild(schemaRoundP);
 
@@ -186,35 +148,103 @@ function createPlayer() {
     list.appendChild(space);
 }
 
+// post scores for the game
+function updateTotalScore(playerId) {
+
+    // check if the end of the game
+    if(players[playerId-1].currFrame >= 10) {
+        console.log("end");
+        return;
+    }
+
+    let total = players[playerId-1].score;
+
+    for(let frame = 0; frame < players[playerId-1].currFrame; frame++) {
+        
+        // skip frames that already have a score
+        if(!players[playerId-1].getFrame(frame).isDone) {
+
+            let scoreBox = document.getElementById('p' + playerId + 't' + (frame+1));
+
+            // if frame is a strike
+            if(strcmp(players[playerId-1].getFrame(frame).scoreType, 'x') === 0) {
+                if(strcmp(players[playerId-1].getFrame(frame+1).scoreType, 'NONE') != 0 &&
+                    strcmp(players[playerId-1].getFrame(frame+2).scoreType, 'NONE') != 0) {
+
+                    players[playerId-1].score = total + players[playerId-1].getFrame(frame).frameScore +
+                        players[playerId-1].getFrame(frame+1).frameScore + players[playerId-1].getFrame(frame+2).frameScore;
+                    scoreBox.innerHTML = players[playerId-1].score;
+                    players[playerId-1].getFrame(frame).isDone = true;
+                }
+            }
+
+            // if frame is a spare
+            else if(strcmp(players[playerId-1].getFrame(frame).scoreType, '/') === 0) {
+                if(strcmp(players[playerId-1].getFrame(frame+1).scoreType, 'NONE') != 0) {
+
+                    players[playerId-1].score = total + players[playerId-1].getFrame(frame).frameScore +
+                        players[playerId-1].getFrame(frame+1).frameScore;
+                    scoreBox.innerHTML = players[playerId-1].score;
+                    players[playerId-1].getFrame(frame).isDone = true;
+                }
+            }
+
+            else if(players[playerId-1].round === 2) {
+                players[playerId-1].score = total + players[playerId-1].getFrame(frame).frameScore;
+                scoreBox.innerHTML = players[playerId-1].score;
+                players[playerId-1].getFrame(frame).isDone = true;
+            }
+        }
+    }
+}
+
 // update frame
 function postRoundScore(playerId, pinsKnockedOut) {
 
+    let frame = players[playerId-1].currFrame;
+
     // if player got a strike
     if(players[playerId-1].round === 1 && pinsKnockedOut === 10) {
-        let box = document.getElementById('p' + playerId + 's2r' + players[playerId-1].frame);
+        let box = document.getElementById('p' + playerId + 's2r' + frame);
         box.innerHTML = 'x';
-        players[playerId-1].updateGameState();
+
+        players[playerId-1].getFrame(frame-1).score2 = 10;
+        players[playerId-1].getFrame(frame-1).scoreType = 'x';
+        updateTotalScore(playerId);
+        players[playerId-1].currFrame = frame + 1;
     }
     // if player got a spare
-    else if(players[playerId-1].round === 2 && (pinsKnockedOut + players[playerId-1].frameScore) === 10) {
-        let box = document.getElementById('p' + playerId + 's2r' + players[playerId-1].frame);
+    else if(players[playerId-1].round === 2 && (pinsKnockedOut + players[playerId-1].getFrame(frame-1).frameScore) === 10) {
+        let box = document.getElementById('p' + playerId + 's2r' + frame);
         box.innerHTML = '/'
+
+        players[playerId-1].getFrame(frame-1).score2 = pinsKnockedOut;
+        players[playerId-1].getFrame(frame-1).frameScore = players[playerId-1].getFrame(frame-1).frameScore + pinsKnockedOut;
+        players[playerId-1].getFrame(frame-1).scoreType = '/';
+        updateTotalScore(playerId);
         players[playerId-1].round = 1;
-        players[playerId-1].frameScore = 0;
-        players[playerId-1].updateGameState();
+        players[playerId-1].currFrame = frame + 1;
     }
     else {
-        let box = document.getElementById('p' + playerId + 's' + players[playerId-1].round + 'r' + players[playerId-1].frame);
+        let box = document.getElementById('p' + playerId + 's' + players[playerId-1].round + 'r' + frame);
         box.innerHTML = pinsKnockedOut;
 
         if(players[playerId-1].round === 1) {
+
+            players[playerId-1].getFrame(frame-1).score1 = pinsKnockedOut;
+            players[playerId-1].getFrame(frame-1).frameScore = pinsKnockedOut;
+            players[playerId-1].getFrame(frame-1).scoreType = '-';
+            updateTotalScore(playerId);
             players[playerId-1].round = 2;
-            players[playerId-1].frameScore = pinsKnockedOut;
         }
         else {
+
+            players[playerId-1].getFrame(frame-1).score2 = pinsKnockedOut;
+            players[playerId-1].getFrame(frame-1).frameScore = players[playerId-1].getFrame(frame-1).frameScore + pinsKnockedOut;
+            players[playerId-1].getFrame(frame-1).scoreType = '-';
+            updateTotalScore(playerId);
+            players[playerId-1].currFrame = frame + 1;
             players[playerId-1].round = 1;
-            players[playerId-1].frameScore = 0;
-            players[playerId-1].updateGameState();
         }
     }
 }
