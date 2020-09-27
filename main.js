@@ -5,11 +5,6 @@ function setUp() {
     createPlayer();
 }
 
-function strcmp(a, b)
-{   
-    return (a<b?-1:(a>b?1:0));  
-}
-
 // creates the scoreboard for a player
 function createPlayer() {
 
@@ -151,48 +146,51 @@ function createPlayer() {
 // post scores for the game
 function updateTotalScore(playerId) {
 
+    let currFrame = players[playerId-1].currFrame;
+
     // check if the end of the game
-    if(players[playerId-1].currFrame >= 10) {
+    if(currFrame > 10) {
         console.log("end");
         return;
     }
 
-    let total = players[playerId-1].score;
+    let frameScore = 0;
+    let score = 0;
 
-    for(let frame = 0; frame < players[playerId-1].currFrame; frame++) {
+    for(let frame = 0; frame < currFrame; frame++) {
         
-        // skip frames that already have a score
-        if(!players[playerId-1].getFrame(frame).isDone) {
+        let scoreBox = document.getElementById('p' + playerId + 't' + (frame+1))
+        
+        // if strike
+        if(players[playerId-1].getFromSymbolBoard(frame).localeCompare('x') === 0) {
 
-            let scoreBox = document.getElementById('p' + playerId + 't' + (frame+1));
-
-            // if frame is a strike
-            if(strcmp(players[playerId-1].getFrame(frame).scoreType, 'x') === 0) {
-                if(strcmp(players[playerId-1].getFrame(frame+1).scoreType, 'NONE') != 0 &&
-                    strcmp(players[playerId-1].getFrame(frame+2).scoreType, 'NONE') != 0) {
-
-                    players[playerId-1].score = total + players[playerId-1].getFrame(frame).frameScore +
-                        players[playerId-1].getFrame(frame+1).frameScore + players[playerId-1].getFrame(frame+2).frameScore;
-                    scoreBox.innerHTML = players[playerId-1].score;
-                    players[playerId-1].getFrame(frame).isDone = true;
-                }
+            // check if two rounds exist after this frame
+            if(frameScore+2 < players[playerId-1].getScoreBoardSize()) {
+                score += 10 + players[playerId-1].getFromScoreBoard(frameScore+1) + players[playerId-1].getFromScoreBoard(frameScore+2);
+                scoreBox.innerHTML = score;
+                frameScore++;
             }
+        }
 
-            // if frame is a spare
-            else if(strcmp(players[playerId-1].getFrame(frame).scoreType, '/') === 0) {
-                if(strcmp(players[playerId-1].getFrame(frame+1).scoreType, 'NONE') != 0) {
+        // if spare
+        else if(players[playerId-1].getFromSymbolBoard(frame).localeCompare('/') === 0) {
 
-                    players[playerId-1].score = total + players[playerId-1].getFrame(frame).frameScore +
-                        players[playerId-1].getFrame(frame+1).frameScore;
-                    scoreBox.innerHTML = players[playerId-1].score;
-                    players[playerId-1].getFrame(frame).isDone = true;
-                }
+            // check there is a round after this frame
+            if(frame+1 < currFrame) {
+                score += 10 + players[playerId-1].getFromScoreBoard(frameScore+2);
+                scoreBox.innerHTML = score;
+                frameScore += 2;
             }
+        }
+        else {
 
-            else if(players[playerId-1].round === 2) {
-                players[playerId-1].score = total + players[playerId-1].getFrame(frame).frameScore;
-                scoreBox.innerHTML = players[playerId-1].score;
-                players[playerId-1].getFrame(frame).isDone = true;
+            if(frameScore+1 < players[playerId-1].getScoreBoardSize()) {
+                score += players[playerId-1].getFromScoreBoard(frameScore) + players[playerId-1].getFromScoreBoard(frameScore+1);
+                frameScore += 2;
+
+                if(players[playerId-1].round === 2) {
+                    scoreBox.innerHTML = score;
+                }
             }
         }
     }
@@ -207,20 +205,19 @@ function postRoundScore(playerId, pinsKnockedOut) {
     if(players[playerId-1].round === 1 && pinsKnockedOut === 10) {
         let box = document.getElementById('p' + playerId + 's2r' + frame);
         box.innerHTML = 'x';
-
-        players[playerId-1].getFrame(frame-1).score2 = 10;
-        players[playerId-1].getFrame(frame-1).scoreType = 'x';
+        
+        players[playerId-1].addToScoreBoard(pinsKnockedOut);
+        players[playerId-1].addToSymbolBoard(frame-1, 'x');
         updateTotalScore(playerId);
         players[playerId-1].currFrame = frame + 1;
     }
     // if player got a spare
-    else if(players[playerId-1].round === 2 && (pinsKnockedOut + players[playerId-1].getFrame(frame-1).frameScore) === 10) {
+    else if(players[playerId-1].round === 2 && (pinsKnockedOut + players[playerId-1].currFrameScore) === 10) {
         let box = document.getElementById('p' + playerId + 's2r' + frame);
         box.innerHTML = '/'
 
-        players[playerId-1].getFrame(frame-1).score2 = pinsKnockedOut;
-        players[playerId-1].getFrame(frame-1).frameScore = players[playerId-1].getFrame(frame-1).frameScore + pinsKnockedOut;
-        players[playerId-1].getFrame(frame-1).scoreType = '/';
+        players[playerId-1].addToScoreBoard(pinsKnockedOut);
+        players[playerId-1].addToSymbolBoard(frame-1, '/');
         updateTotalScore(playerId);
         players[playerId-1].round = 1;
         players[playerId-1].currFrame = frame + 1;
@@ -230,18 +227,15 @@ function postRoundScore(playerId, pinsKnockedOut) {
         box.innerHTML = pinsKnockedOut;
 
         if(players[playerId-1].round === 1) {
-
-            players[playerId-1].getFrame(frame-1).score1 = pinsKnockedOut;
-            players[playerId-1].getFrame(frame-1).frameScore = pinsKnockedOut;
-            players[playerId-1].getFrame(frame-1).scoreType = '-';
+            players[playerId-1].addToScoreBoard(pinsKnockedOut);
+            players[playerId-1].currFrameScore = pinsKnockedOut;
             updateTotalScore(playerId);
             players[playerId-1].round = 2;
         }
         else {
-
-            players[playerId-1].getFrame(frame-1).score2 = pinsKnockedOut;
-            players[playerId-1].getFrame(frame-1).frameScore = players[playerId-1].getFrame(frame-1).frameScore + pinsKnockedOut;
-            players[playerId-1].getFrame(frame-1).scoreType = '-';
+            players[playerId-1].addToScoreBoard(pinsKnockedOut);
+            players[playerId-1].addToSymbolBoard(frame-1, 'NS');
+            players[playerId-1].currFrameScore = 0;
             updateTotalScore(playerId);
             players[playerId-1].currFrame = frame + 1;
             players[playerId-1].round = 1;

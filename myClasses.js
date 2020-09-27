@@ -1,80 +1,42 @@
-class Frame {
-    #score1;
-    #score2;
-    #scoreType;
-    #frameScore;
-    #isDone;
-
-    constructor() {
-        this.#score1 = 0;
-        this.#score2 = 0;
-        this.#scoreType = 'NONE';
-        this.#frameScore = 0;
-        this.#isDone = false;
-    }
-
-    get score1() {
-        return this.#score1;
-    }
-
-    set score1(newScore) {
-        this.#score1 = newScore;
-    }
-
-    get score2() {
-        return this.#score2;
-    }
-
-    set score2(newScore) {
-        this.#score2 = newScore;
-    }
-
-    get scoreType() {
-        return this.#scoreType;
-    }
-
-    set scoreType(newType) {
-        this.#scoreType = newType;
-    }
-
-    get frameScore() {
-        return this.#frameScore;
-    }
-
-    set frameScore(newScore) {
-        this.#frameScore = newScore
-    }
-
-    get isDone() {
-        return this.#isDone;
-    }
-
-    set isDone(done) {
-        this.#isDone = true;
-    }
-}
-
 class Game {
 
     #currFrame;
+    #currFrameScore;
     #round;
     #score;
     #scoreBoard;
+    #symbolBoard;
 
     constructor() {
         this.#currFrame = 1;
         this.#round = 1;
         this.#score = 0;
-        this.#scoreBoard = new Array(11);
+        this.#scoreBoard = [];
+        this.#symbolBoard = [];
 
-        for(let frame = 0; frame < 11; frame++) {
-            let frameObj = new Frame();
-            this.#scoreBoard[frame] = frameObj;
+        for(let i = 0; i < 11; i++) {
+            this.#symbolBoard.push('-');
         }
     }
 
-    getFrame(frameNum) {
-        return this.#scoreBoard[frameNum];
+    addToScoreBoard(score) {
+        this.#scoreBoard.push(score);
+    }
+
+    getFromScoreBoard(index) {
+        return this.#scoreBoard[index];
+    }
+
+    addToSymbolBoard(index, symbol) {
+        this.#symbolBoard[index] = symbol;
+    }
+
+    getFromSymbolBoard(index) {
+        return this.#symbolBoard[index];
+    }
+
+    getScoreBoardSize() {
+        return this.#scoreBoard.length;
     }
 
     set score(newScore) {
@@ -99,5 +61,13 @@ class Game {
 
     set currFrame(num) {
         this.#currFrame = num;
+    }
+
+    get currFrameScore() {
+        return this.#currFrameScore;
+    }
+
+    set currFrameScore(score) {
+        this.#currFrameScore = score;
     }
 }
