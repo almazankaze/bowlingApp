@@ -6,12 +6,14 @@ class Game {
     #score;
     #scoreBoard;
     #symbolBoard;
+    #gameOver;
 
     constructor() {
         this.#currFrame = 1;
         this.#currFrameScore = 0;
         this.#round = 1;
         this.#score = 0;
+        this.#gameOver = false;
         this.#scoreBoard = [];
         this.#symbolBoard = [];
 
@@ -38,6 +40,14 @@ class Game {
 
     getScoreBoardSize() {
         return this.#scoreBoard.length;
+    }
+
+    frameIsStrike(index) {
+        return compareStr(this.#symbolBoard[index], 'x');
+    }
+
+    frameIsSpare(index) {
+        return compareStr(this.#symbolBoard[index], '/');
     }
 
     set score(newScore) {
@@ -70,5 +80,13 @@ class Game {
 
     set currFrameScore(score) {
         this.#currFrameScore = score;
+    }
+
+    get gameOver() {
+        return this.#gameOver;
+    }
+
+    set gameOver(state) {
+        this.#gameOver = state;
     }
 }

@@ -17,6 +17,10 @@ function addPlayer() {
     }
 }
 
+function compareStr(str1, str2) {
+    return str1 < str2 || str1 > str2 ? false : true;
+}
+
 function setUp() {
     createPlayer();
 }
@@ -165,9 +169,13 @@ function updateTotalScore(playerId) {
     let currFrame = players[playerId-1].currFrame;
 
     // check if the end of the game
-    if(currFrame > 10) {
-        console.log("end");
-        return;
+    if(currFrame === 10) {
+
+        if(!players[playerId-1].frameIsStrike(currFrame-1) && !players[playerId-1].frameIsSpare(currFrame-1)) {
+            if(players[playerId-1].round === 2) {
+                players[playerId-1].gameOver = true;
+            }
+        }
     }
 
     let frameScore = 0;
@@ -178,7 +186,7 @@ function updateTotalScore(playerId) {
         let scoreBox = document.getElementById('p' + playerId + 't' + (frame+1))
         
         // if strike
-        if(players[playerId-1].getFromSymbolBoard(frame).localeCompare('x') === 0) {
+        if(players[playerId-1].frameIsStrike(frame)) {
 
             // check if two rounds exist after this frame
             if(frameScore+2 < players[playerId-1].getScoreBoardSize()) {
@@ -189,7 +197,7 @@ function updateTotalScore(playerId) {
         }
 
         // if spare
-        else if(players[playerId-1].getFromSymbolBoard(frame).localeCompare('/') === 0) {
+        else if(players[playerId-1].frameIsSpare(frame)) {
 
             // check there is a round after this frame
             if(frame+1 < currFrame) {
@@ -234,6 +242,7 @@ function postRoundScore(playerId, pinsKnockedOut) {
 
         players[playerId-1].addToScoreBoard(pinsKnockedOut);
         players[playerId-1].addToSymbolBoard(frame-1, '/');
+        players[playerId-1].currFrameScore = 0;
         updateTotalScore(playerId);
         players[playerId-1].round = 1;
         players[playerId-1].currFrame = frame + 1;
@@ -269,7 +278,12 @@ function getInput(btnId) {
     input.value = '';
 
     // check input makes sense
-    if(thisFrameScore > 10) {
+    if(players[btnId-1].gameOver) {
+        errorMessage.innerHTML = 'Game for this player is now over. Thanks for playing!';
+        $('#errorModal').modal();
+        return;
+    }
+    else if(thisFrameScore > 10) {
         errorMessage.innerHTML = 'total number of pins knocked out should not exceed 10';
         $('#errorModal').modal();
         return;
