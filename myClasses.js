@@ -9,6 +9,7 @@ class Game {
 
     constructor() {
         this.#currFrame = 1;
+        this.#currFrameScore = 0;
         this.#round = 1;
         this.#score = 0;
         this.#scoreBoard = [];

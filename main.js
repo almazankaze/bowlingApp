@@ -1,5 +1,21 @@
 // color array
 let backgroundColors = ['#1976d2','#d50000','#388e3c','#8e24aa'];
+let addBtn = document.getElementById('addButton');
+let errorMessage = document.querySelector('.modal-body p');
+
+addBtn.addEventListener('click',addPlayer);
+
+function addPlayer() {
+
+    if(numPlayers <= 4) {
+        createPlayer();
+        numPlayers++;
+    }
+    else {
+        errorMessage.innerHTML = 'reached max total number of players';
+        $('#errorModal').modal();
+    }
+}
 
 function setUp() {
     createPlayer();
@@ -246,13 +262,21 @@ function postRoundScore(playerId, pinsKnockedOut) {
 function getInput(btnId) {
 
     let input = document.getElementById('pInput' + btnId);
+    let inputText = input.value;
     let inputVal = parseInt(input.value);
-    let thisFrameScore = inputVal + players[btnId-1].frameScore;
+    let thisFrameScore = inputVal + players[btnId-1].currFrameScore;
 
     input.value = '';
 
     // check input makes sense
     if(thisFrameScore > 10) {
+        errorMessage.innerHTML = 'total number of pins knocked out should not exceed 10';
+        $('#errorModal').modal();
+        return;
+    }
+    else if(inputText == '' || isNaN(inputText) || thisFrameScore < 0) {
+        errorMessage.innerHTML = 'input should be a valid number between 0 and 10';
+        $('#errorModal').modal();
         return;
     }
     
