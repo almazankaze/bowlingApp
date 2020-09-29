@@ -1,2 +1,3 @@
-# bowlingApp
-App that keeps track of player's scores in a bowling game
+## Live Demo
+
+[Bowling App](https://almazankaze.github.io/projects/bowlingApp/index.html) - Keep track of scores
