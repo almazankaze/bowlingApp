@@ -89,7 +89,7 @@ function createPlayer() {
         schemaScore.classList.add('row','topBorder');
 
         let score1 = document.createElement('div');
-        score1.classList.add('col-6','col-sm-6');
+        score1.classList.add('col-6','col-lg-6');
         let score1P = document.createElement('p');
         score1P.classList.add('font-weight-bold');
         score1P.id = 'p' + numPlayers + 's1r' + i;
@@ -99,7 +99,7 @@ function createPlayer() {
         schemaScore.appendChild(score1);
 
         let score2 = document.createElement('div');
-        score2.classList.add('col-6','col-sm-6','specialBorder');
+        score2.classList.add('col-6','col-lg-6','specialBorder');
         let score2P = document.createElement('p');
         score2P.classList.add('font-weight-bold');
         score2P.id = 'p' + numPlayers + 's2r' + i;
@@ -128,7 +128,7 @@ function createPlayer() {
 
     // create input
     let inputDiv = document.createElement('div');
-    inputDiv.classList.add('col-6','col-sm-2');
+    inputDiv.classList.add('col-6','col-lg-2');
     let input = document.createElement('input');
     input.classList.add('form-control','marginTop');
     input.placeholder = 'knocked out pins';
@@ -139,7 +139,7 @@ function createPlayer() {
 
     // create button
     let btnDiv = document.createElement('div');
-    btnDiv.classList.add('col-3','col-sm-2');
+    btnDiv.classList.add('col-3','col-lg-2');
     let btn = document.createElement('button');
     btn.classList.add('btn','btn-primary','shadow-sm','marginTop');
     btn.type = 'submit';
@@ -169,8 +169,7 @@ function updateTotalScore(playerId) {
     let currFrame = players[playerId-1].currFrame;
 
     // check if the end of the game
-    if(currFrame === 10) {
-
+    if(currFrame == 10) {
         if(!players[playerId-1].frameIsStrike(currFrame-1) && !players[playerId-1].frameIsSpare(currFrame-1)) {
             if(players[playerId-1].round === 2) {
                 players[playerId-1].gameOver = true;
@@ -212,21 +211,69 @@ function updateTotalScore(playerId) {
                 score += players[playerId-1].getFromScoreBoard(frameScore) + players[playerId-1].getFromScoreBoard(frameScore+1);
                 frameScore += 2;
 
-                if(players[playerId-1].round === 2) {
+                if(players[playerId-1].round === 2 && currFrame != 11) {
                     scoreBox.innerHTML = score;
                 }
             }
         }
     }
+
+    players[playerId-1].score = score;
+}
+
+function extraFrame(frame, playerId, pinsKnockedOut) {
+
+    // check if frame 10 was a spare to allow only one more roll
+    if(players[playerId-1].frameIsSpare(9)) {
+        players[playerId-1].round = 2;
+    }
+
+    // if strike
+    if(pinsKnockedOut === 10) {
+
+        let box = document.getElementById('p' + playerId + 's' + players[playerId-1].round + 'r' + frame);
+        box.innerHTML = 'x';
+        players[playerId-1].addToScoreBoard(pinsKnockedOut);
+        players[playerId-1].addToSymbolBoard(frame-1, 'x');
+        updateTotalScore(playerId);
+        players[playerId-1].currFrameScore = 0;
+        players[playerId-1].score = players[playerId-1].score + 10;
+        players[playerId-1].round = players[playerId-1].round + 1;
+    }
+    // if spare
+    else if(pinsKnockedOut + players[playerId-1].currFrameScore === 10) {
+
+        let box = document.getElementById('p' + playerId + 's' + players[playerId-1].round + 'r' + frame);
+        box.innerHTML = '/';
+        players[playerId-1].addToScoreBoard(pinsKnockedOut);
+        players[playerId-1].addToSymbolBoard(frame-1, '/');
+        updateTotalScore(playerId);
+        players[playerId-1].score = players[playerId-1].score + pinsKnockedOut;
+        players[playerId-1].round = players[playerId-1].round + 1;
+    }
+    else {
+        let box = document.getElementById('p' + playerId + 's' + players[playerId-1].round + 'r' + frame);
+        box.innerHTML = pinsKnockedOut;
+        players[playerId-1].addToScoreBoard(pinsKnockedOut);
+        players[playerId-1].addToSymbolBoard(frame-1, 'NS');
+        updateTotalScore(playerId);
+        players[playerId-1].currFrameScore = pinsKnockedOut;
+        players[playerId-1].score = players[playerId-1].score + pinsKnockedOut;
+        players[playerId-1].round = players[playerId-1].round + 1;
+    }
+
+    //  end the game
+    if(players[playerId-1].round === 3) {
+        players[playerId-1].gameOver = true;
+    }
 }
 
 // update frame
-function postRoundScore(playerId, pinsKnockedOut) {
-
-    let frame = players[playerId-1].currFrame;
+function postRoundScore(frame, playerId, pinsKnockedOut) {
 
     // if player got a strike
     if(players[playerId-1].round === 1 && pinsKnockedOut === 10) {
+        
         let box = document.getElementById('p' + playerId + 's2r' + frame);
         box.innerHTML = 'x';
         
@@ -274,6 +321,7 @@ function getInput(btnId) {
     let inputText = input.value;
     let inputVal = parseInt(input.value);
     let thisFrameScore = inputVal + players[btnId-1].currFrameScore;
+    let frame = players[btnId-1].currFrame;
 
     input.value = '';
 
@@ -293,8 +341,14 @@ function getInput(btnId) {
         $('#errorModal').modal();
         return;
     }
-    
-    postRoundScore(btnId, inputVal);
+
+    // handle extra frame differently
+    if(frame <= 10) {
+        postRoundScore(frame, btnId, inputVal);
+    }
+    else {
+        extraFrame(frame, btnId, inputVal);
+    }
 }
 
 let numPlayers = 1;
@@ -304,4 +358,49 @@ let players = new Array();
 for(j = 0; j < 2; j++) {
     setUp();
     numPlayers++;
+}
+
+// test function
+function testInput(playerId) {
+
+    let myInputs = [10,10,10,10,10,10,10,10,10,10,10,10];
+    //let myInputs = [10,10,10,10,10,10,10,10,10,10,10,6];
+    //let myInputs = [10,10,10,10,10,10,10,10,10,10,6,10];
+    //let myInputs = [10,10,10,10,10,10,10,10,10,10,3,7];
+
+    //let myInputs = [10,10,10,10,10,10,10,10,10,4,6,10];
+    //let myInputs = [10,10,10,10,10,10,10,10,10,4,6,7];
+
+    //let myInputs = [10,10,10,10,10,10,10,10,10,4,4];
+
+    //let myInputs = [6,4,5,4,9,0,10,10,5,5,5,3,6,3,9,1,9,1,10];
+
+    //let myInputs = [6,4,5,4,9,0,10,10,5,5,5,3,6,3,9,1,10];
+    //let myInputs = [6,4,5,4,9,0,10,10,5,5,5,3,6,3,9,1,8,2];
+
+    for(x of myInputs) {
+
+        let thisFrameScore = x + players[playerId-1].currFrameScore;
+        let frame = players[playerId-1].currFrame;
+
+        // check input makes sense
+        if(players[playerId-1].gameOver) {
+            errorMessage.innerHTML = 'Game for this player is now over. Thanks for playing!';
+            $('#errorModal').modal();
+            return;
+        }
+        else if(thisFrameScore > 10) {
+            errorMessage.innerHTML = 'total number of pins knocked out should not exceed 10';
+            $('#errorModal').modal();
+            return;
+        }
+
+        // handle extra frame differently
+        if(frame <= 10) {
+            postRoundScore(frame, playerId, x);
+        }
+        else {
+            extraFrame(frame, playerId, x);
+        }
+    }
 }
